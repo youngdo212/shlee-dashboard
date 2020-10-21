@@ -8,6 +8,7 @@ import User from './common/component/User';
 import routes from './common/routes';
 import Navigation from './common/component/Navigation';
 import { Path } from './common/constant';
+import useRemoveLoadingIcon from './common/hook/useRemoveLoadingIcon';
 
 function App() {
   const history = useHistory();
@@ -16,6 +17,8 @@ function App() {
   function selectMenu({ key }) {
     history.push(key);
   }
+
+  useRemoveLoadingIcon();
 
   return (
     <Layout>
