@@ -1,12 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { BrowserRouter } from 'react-router-dom';
+
+const API_BASENAME = process.env.REACT_APP_API_BASENAME;
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter basename={API_BASENAME}>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
 );
