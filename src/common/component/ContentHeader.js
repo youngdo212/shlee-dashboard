@@ -2,10 +2,11 @@ import React from 'react';
 import { Path } from '../constant';
 import styled from 'styled-components';
 import { PageHeader } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
-export default function ContentHeader({ pathname }) {
-  const routes = getBreadcrumbRoutes(pathname);
+export default function ContentHeader() {
+  const location = useLocation();
+  const routes = getBreadcrumbRoutes(location.pathname);
   const title = breadcrumbNameMap[routes[routes.length - 1]?.path];
 
   function itemRender(route, params, routes, paths) {
