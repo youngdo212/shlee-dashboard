@@ -7,7 +7,7 @@ import { Switch, Route, useHistory, useLocation } from 'react-router-dom';
 import User from './common/component/User';
 import routes from './common/routes';
 import Navigation from './common/component/Navigation';
-import { Path } from './common/constant';
+import { I18N, Path } from './common/constant';
 import useRemoveLoadingIcon from './common/hook/useRemoveLoadingIcon';
 
 function App() {
@@ -53,8 +53,8 @@ const navigationIconMap = {
 };
 
 const navigationTextMap = {
-  [Path.Dashboard]: '대시보드',
-  [Path.Project]: '프로젝트',
+  [Path.Dashboard]: I18N.NAVIGATION_TEXT_DASHBOARD,
+  [Path.Project]: I18N.NAVIGATION_TEXT_PROJECT,
 };
 
 const navigationItems = routes.map(route => ({

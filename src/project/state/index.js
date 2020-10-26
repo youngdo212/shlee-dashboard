@@ -19,6 +19,7 @@ export const actions = {
 
 const INITIAL_STATE = {
   projectList: [],
+  showProjectForm: false,
 };
 
 const reducer = createReducer(INITIAL_STATE, builder => {
