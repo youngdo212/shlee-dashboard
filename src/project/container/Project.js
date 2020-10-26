@@ -1,66 +1,90 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Card, Popconfirm, Space } from 'antd';
+import {
+  ExclamationCircleOutlined,
+  LoadingOutlined,
+  PlusOutlined,
+} from '@ant-design/icons';
+import { Button, Card, Modal, Space } from 'antd';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import ContentHeader from '../../common/component/ContentHeader';
 import { actions } from '../state';
 import { getProjectListWithKey } from '../state/selector';
 import FetchLabel from '../component/FetchLabel';
 import DraggableTable from '../component/DraggableTable';
+import '../component/HeaderUpload.css';
+import ProjectForm from './ProjectForm';
+import { I18N } from '../../common/constant';
+import useFetchInfo from '../../common/hook/useFetchInfo';
 
 export default function Project() {
   const dispatch = useDispatch();
   const projectList = useSelector(getProjectListWithKey);
+  const showProjectForm = useSelector(state => state.project.showProjectForm);
+  const currentProjectId = useSelector(state => state.project.currentProjectId);
 
   useEffect(() => {
     dispatch(actions.fetchProjectList());
     return () => dispatch(actions.initialize());
   }, [dispatch]);
 
+  const { isFetching } = useFetchInfo(actions.fetchCreateProject.toString());
+
   const columns = [
     {
-      title: 'Title',
+      title: I18N.PROJECT_TITLE,
       dataIndex: 'title',
       key: 'title',
-      render: text => <Link to="#">{text}</Link>,
     },
     {
-      title: 'Header',
+      title: I18N.PROJECT_HEADER,
       dataIndex: 'header',
       key: 'header',
       ellipsis: true,
     },
     {
-      title: 'Client',
+      title: I18N.PROJECT_CLIENT,
       dataIndex: 'client',
       key: 'client',
     },
     {
-      title: 'Agency',
+      title: I18N.PROJECT_AGENCY,
       dataIndex: 'agency',
       key: 'agency',
     },
     {
-      title: 'Role',
+      title: I18N.PROJECT_ROLE,
       dataIndex: 'role',
       key: 'role',
       ellipsis: true,
     },
     {
-      title: 'Action',
+      title: I18N.PROJECT_LIST_COLUMN_ACTION,
       key: 'action',
       render: (_, record) => (
-        <Popconfirm
-          title="정말로 삭제 하시겠습니까?"
-          onConfirm={() => dispatch(actions.fetchRemoveProject(record))}
-          okText="삭제"
-          cancelText="취소"
-        >
-          <Button danger size="small">
-            삭제
+        <Space>
+          <Button size="small" onClick={() => {}}>
+            {I18N.PROJECT_LIST_ITEM_EDIT}
           </Button>
-        </Popconfirm>
+          <Button
+            danger
+            size="small"
+            onClick={() =>
+              Modal.confirm({
+                title: I18N.PROJECT_LIST_ITEM_REMOVE_CONFIRM_TITLE,
+                icon: <ExclamationCircleOutlined />,
+                content: I18N.PROJECT_LIST_ITEM_REMOVE_CONFIRM_CONTENT,
+                okText: I18N.PROJECT_LIST_ITEM_REMOVE_CONFIRM_OK,
+                okType: 'danger',
+                cancelText: I18N.PROJECT_LIST_ITEM_REMOVE_CONFIRM_CANCEL,
+                onOk() {
+                  dispatch(actions.fetchRemoveProject(record));
+                },
+              })
+            }
+          >
+            {I18N.PROJECT_LIST_ITEM_REMOVE}
+          </Button>
+        </Space>
       ),
     },
   ];
@@ -72,7 +96,7 @@ export default function Project() {
         title={
           <Space>
             <FetchLabel
-              label="프로젝트 리스트"
+              label={I18N.PROJECT_LIST}
               actionType={actions.fetchProjectList.toString()}
             />
             <FetchLabel actionType={actions.fetchRemoveProject.toString()} />
@@ -83,8 +107,19 @@ export default function Project() {
         style={{ margin: 24 }}
         bodyStyle={{ padding: 0 }}
         extra={
-          <Button type="primary" icon={<PlusOutlined />}>
-            프로젝트 추가
+          <Button
+            type="primary"
+            icon={isFetching ? <LoadingOutlined /> : <PlusOutlined />}
+            disabled={isFetching}
+            onClick={() =>
+              dispatch(
+                actions.fetchCreateProject(() => {
+                  dispatch(actions.setValue('showProjectForm', true));
+                })
+              )
+            }
+          >
+            {I18N.ADD_PROJECT}
           </Button>
         }
       >
@@ -95,6 +130,15 @@ export default function Project() {
           onMove={(from, to) => dispatch(actions.fetchMoveProject(from, to))}
         />
       </Card>
+      <ProjectForm
+        visible={showProjectForm}
+        onCreate={values =>
+          dispatch(
+            actions.fetchUpdateProject({ values, fetchKey: currentProjectId })
+          )
+        }
+        onCancel={() => dispatch(actions.setValue('showProjectForm', false))}
+      />
     </>
   );
 }

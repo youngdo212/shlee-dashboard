@@ -1,6 +1,7 @@
 import { UserOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Menu } from 'antd';
 import React from 'react';
+import { I18N } from '../constant';
 
 /**
  *
@@ -13,7 +14,7 @@ export default function User({ name, logout }) {
     <Dropdown
       overlay={
         <Menu>
-          <Menu.Item onClick={logout}>로그아웃</Menu.Item>
+          <Menu.Item onClick={logout}>{I18N.LOGOUT}</Menu.Item>
         </Menu>
       }
       trigger={['click']}

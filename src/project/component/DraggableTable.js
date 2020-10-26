@@ -35,6 +35,8 @@ function DraggableTableRow({ index, onMove, className, style, ...restProps }) {
   const [{ isOver, dropClassName }, dropRef] = useDrop({
     accept: REACT_DND_ITEM_TYPE,
     drop: item => {
+      if (item.index === index) return;
+
       onMove(item.index, index);
     },
     collect: monitor => {

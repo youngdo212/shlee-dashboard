@@ -1,5 +1,5 @@
 import React from 'react';
-import { Path } from '../constant';
+import { I18N, Path } from '../constant';
 import styled from 'styled-components';
 import { PageHeader } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
@@ -22,8 +22,8 @@ export default function ContentHeader() {
 }
 
 const breadcrumbNameMap = {
-  [Path.Dashboard]: '홈',
-  [Path.Project]: '프로젝트',
+  [Path.Dashboard]: I18N.BREADCRUMB_NAME_DASHBOARD,
+  [Path.Project]: I18N.BREADCRUMB_NAME_PROJECT,
 };
 
 const StyledPageHeader = styled(PageHeader)`
