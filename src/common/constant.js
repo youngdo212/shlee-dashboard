@@ -42,6 +42,7 @@ export const I18N = {
   PROJECT_FORM_VALIDATE_MESSAGE_TYPES_NUMBER:
     '${label} 값에는 숫자를 입력해야 합니다',
   PROJECT_FORM_VALIDATE_MESSAGE_NUMBER_MIN: '${min} 이상의 값을 입력하세요',
+  PROJECT_FORM_VALIDATE_MESSAGE_UPLOADING: '아직 업로드 중인 파일이 있습니다',
   PROJECT_TITLE: 'Title',
   PROJECT_THUMBNAIL: 'Thumbnail',
   PROJECT_HEADER: 'Header',

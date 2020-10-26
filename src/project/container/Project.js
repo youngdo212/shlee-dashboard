@@ -1,4 +1,8 @@
-import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  ExclamationCircleOutlined,
+  LoadingOutlined,
+  PlusOutlined,
+} from '@ant-design/icons';
 import { Button, Card, Modal, Space } from 'antd';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,16 +14,20 @@ import DraggableTable from '../component/DraggableTable';
 import '../component/HeaderUpload.css';
 import ProjectForm from './ProjectForm';
 import { I18N } from '../../common/constant';
+import useFetchInfo from '../../common/hook/useFetchInfo';
 
 export default function Project() {
   const dispatch = useDispatch();
   const projectList = useSelector(getProjectListWithKey);
   const showProjectForm = useSelector(state => state.project.showProjectForm);
+  const currentProjectId = useSelector(state => state.project.currentProjectId);
 
   useEffect(() => {
     dispatch(actions.fetchProjectList());
     return () => dispatch(actions.initialize());
   }, [dispatch]);
+
+  const { isFetching } = useFetchInfo(actions.fetchCreateProject.toString());
 
   const columns = [
     {
@@ -101,8 +109,15 @@ export default function Project() {
         extra={
           <Button
             type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => dispatch(actions.setValue('showProjectForm', true))}
+            icon={isFetching ? <LoadingOutlined /> : <PlusOutlined />}
+            disabled={isFetching}
+            onClick={() =>
+              dispatch(
+                actions.fetchCreateProject(() => {
+                  dispatch(actions.setValue('showProjectForm', true));
+                })
+              )
+            }
           >
             {I18N.ADD_PROJECT}
           </Button>
@@ -117,10 +132,11 @@ export default function Project() {
       </Card>
       <ProjectForm
         visible={showProjectForm}
-        onCreate={values => {
-          console.log(values);
-          dispatch(actions.setValue('showProjectForm', false));
-        }}
+        onCreate={values =>
+          dispatch(
+            actions.fetchUpdateProject({ values, fetchKey: currentProjectId })
+          )
+        }
         onCancel={() => dispatch(actions.setValue('showProjectForm', false))}
       />
     </>

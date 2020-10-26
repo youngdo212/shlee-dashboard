@@ -59,6 +59,34 @@ function* fetchMoveProject({ payload }) {
   }
 }
 
+function* fetchCreateProject({ payload }) {
+  const { isSuccess, data, errorMessage } = yield call(callApi, {
+    method: 'post',
+    url: '/project',
+  });
+
+  if (isSuccess && data) {
+    yield put(actions.setValue('currentProjectId', data.id));
+    payload.callback && payload.callback();
+  } else {
+    message.error(errorMessage);
+  }
+}
+
+function* fetchUpdateProject({ payload }) {
+  const { isSuccess, data, errorMessage } = yield call(callApi, {
+    method: 'put',
+    url: `/project/${payload.id}`,
+    data: { ...payload },
+  });
+
+  if (isSuccess && data) {
+    yield put(actions.addProject(data));
+  } else {
+    message.error(errorMessage);
+  }
+}
+
 export default function* () {
   yield all([
     takeLeading(
@@ -72,6 +100,14 @@ export default function* () {
     takeLeading(
       actions.fetchMoveProject,
       makeFetchSaga({ fetchSaga: fetchMoveProject, canCache: false })
+    ),
+    takeLeading(
+      actions.fetchCreateProject,
+      makeFetchSaga({ fetchSaga: fetchCreateProject, canCache: false })
+    ),
+    takeLeading(
+      actions.fetchUpdateProject,
+      makeFetchSaga({ fetchSaga: fetchUpdateProject, canCache: false })
     ),
   ]);
 }

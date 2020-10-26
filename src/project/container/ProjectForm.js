@@ -4,11 +4,14 @@ import {
   PlusOutlined,
 } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, Modal, Radio, Upload } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { API_HOST, I18N } from '../../common/constant';
 import SingleUpload from '../component/SingleUpload';
 import '../component/HeaderUpload.css';
+import useFetchInfo from '../../common/hook/useFetchInfo';
+import { actions } from '../state';
+import { useSelector } from 'react-redux';
 
 /**
  *
@@ -19,13 +22,29 @@ import '../component/HeaderUpload.css';
  */
 export default function ProjectForm({ visible, onCreate, onCancel }) {
   const [form] = Form.useForm();
+  const currentProjectId = useSelector(state => state.project.currentProjectId);
+  const { isFetching, isFetched } = useFetchInfo(
+    actions.fetchUpdateProject.toString(),
+    currentProjectId
+  );
+  useEffect(() => {
+    if (isFetched) {
+      form.resetFields();
+      onCancel();
+    }
+  }, [isFetched, form, onCancel]);
 
   function submit() {
     form
       .validateFields()
       .then(values => {
-        form.resetFields();
-        onCreate(values);
+        if (isUploading(values)) {
+          Modal.warn({
+            title: I18N.PROJECT_FORM_VALIDATE_MESSAGE_UPLOADING,
+          });
+        } else {
+          onCreate(normalizeValues({ id: currentProjectId, ...values }));
+        }
       })
       .catch(error => {
         console.log('ProjectForm Validate Failed:', error);
@@ -55,6 +74,7 @@ export default function ProjectForm({ visible, onCreate, onCancel }) {
       cancelText={I18N.PROJECT_FORM_CANCEL}
       onCancel={close}
       width={1000}
+      confirmLoading={isFetching}
     >
       <Form
         form={form}
@@ -219,4 +239,52 @@ function normalizeFile(e) {
   if (Array.isArray(e)) return e;
 
   return e && e.fileList;
+}
+
+/**
+ *
+ * @param {object} values
+ */
+function normalizeValues({
+  id,
+  thumbnail,
+  title,
+  header,
+  quickViewUrl,
+  client,
+  agency,
+  role,
+  category,
+  headerImage,
+  snapshotColumn,
+  videoUrls,
+  snapshots,
+}) {
+  const thumbnailImageUrl = thumbnail[0]?.response || '';
+  const headerImageUrl = headerImage[0]?.response || '';
+  const snapshotUrls = snapshots?.map(item => item.response) || [];
+
+  return {
+    id,
+    thumbnailImageUrl,
+    title,
+    header,
+    quickViewUrl,
+    client,
+    agency,
+    role,
+    category,
+    headerImageUrl,
+    snapshotColumn,
+    videoUrls: videoUrls || [],
+    snapshotUrls,
+  };
+}
+
+function isUploading(values) {
+  const { thumbnail, headerImage, snapshots } = values;
+
+  return [...thumbnail, ...headerImage, ...(snapshots || [])].some(
+    file => file.status === 'uploading'
+  );
 }

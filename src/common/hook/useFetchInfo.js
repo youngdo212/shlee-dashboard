@@ -10,7 +10,9 @@ import { getFetchKey } from '../util/fetch';
 export default function useFetchInfo(actionType, fetchKey) {
   const _fetchKey = getFetchKey({
     type: actionType,
-    [FETCH_KEY]: fetchKey,
+    meta: {
+      [FETCH_KEY]: fetchKey,
+    },
   });
   return useSelector(
     state => ({
