@@ -1,25 +1,30 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { Upload } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { API_HOST, I18N } from '../../common/constant';
 
 /**
  *
  * @param {object} param
  * @param {function=} param.onChange
+ * @param {array=} param.fileList
  */
-export default function SingleUpload({ onChange, ...restProps }) {
+export default function SingleUpload({ onChange, fileList, ...restProps }) {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+
+  useEffect(() => {
+    if (fileList) {
+      const [file] = fileList;
+      setImageUrl(file?.url || file?.response?.url);
+    }
+  }, [fileList]);
 
   function handleChange(e) {
     if (e.file.status === 'uploading') {
       setLoading(true);
     } else if (e.file.status === 'done') {
-      getBase64(e.file.originFileObj, imageUrl => {
-        setImageUrl(imageUrl);
-        setLoading(false);
-      });
+      setLoading(false);
     }
 
     onChange && onChange(e);
@@ -33,6 +38,7 @@ export default function SingleUpload({ onChange, ...restProps }) {
       listType="picture-card"
       showUploadList={false}
       onChange={handleChange}
+      fileList={fileList}
       {...restProps}
     >
       {!!imageUrl ? (
@@ -45,10 +51,4 @@ export default function SingleUpload({ onChange, ...restProps }) {
       )}
     </Upload>
   );
-}
-
-function getBase64(file, callback) {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
-  reader.readAsDataURL(file);
 }

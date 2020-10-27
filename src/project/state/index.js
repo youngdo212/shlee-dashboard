@@ -7,7 +7,10 @@ export const actions = {
     payload: { key, value },
   })),
   addProject: createAction('project/addProject', project => ({
-    payload: project,
+    payload: { project },
+  })),
+  editProject: createAction('project/editProject', project => ({
+    payload: { project },
   })),
   fetchProjectList: createAction('project/fetchProjectList'),
   fetchRemoveProject: createAction('project/fetchRemoveProject', project => ({
@@ -48,7 +51,17 @@ const reducer = createReducer(INITIAL_STATE, builder => {
       state[action.payload.key] = action.payload.value;
     })
     .addCase(actions.addProject, (state, action) => {
-      state.projectList = [action.payload, ...state.projectList];
+      const { project } = action.payload;
+      state.projectList = [project, ...state.projectList];
+    })
+    .addCase(actions.editProject, (state, action) => {
+      const { project } = action.payload;
+      const targetIndex = state.projectList.findIndex(
+        item => item.id === project.id
+      );
+      if (targetIndex !== -1) {
+        state.projectList[targetIndex] = project;
+      }
     });
 });
 
