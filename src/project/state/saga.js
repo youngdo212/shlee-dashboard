@@ -73,7 +73,7 @@ function* fetchCreateProject({ payload }) {
   }
 }
 
-function* fetchUpdateProject({ payload }) {
+function* fetchUpdateProject({ payload, meta }) {
   const { isSuccess, data, errorMessage } = yield call(callApi, {
     method: 'put',
     url: `/project/${payload.id}`,
@@ -87,6 +87,8 @@ function* fetchUpdateProject({ payload }) {
     } else {
       yield put(actions.addProject(data));
     }
+
+    meta.callback && meta.callback();
   } else {
     message.error(errorMessage);
   }

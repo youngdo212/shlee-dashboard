@@ -29,10 +29,11 @@ export const actions = {
   })),
   fetchUpdateProject: createAction(
     'project/fetchUpdateProject',
-    ({ values, fetchKey }) => ({
+    ({ values, fetchKey, callback }) => ({
       payload: values,
       meta: {
         [FETCH_KEY]: fetchKey,
+        callback,
       },
     })
   ),

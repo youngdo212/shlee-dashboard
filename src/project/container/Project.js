@@ -100,6 +100,11 @@ export default function Project() {
     },
   ];
 
+  function closeProjectForm() {
+    dispatch(actions.setValue('currentProjectId', null));
+    dispatch(actions.setValue('showProjectForm', false));
+  }
+
   return (
     <>
       <ContentHeader />
@@ -147,13 +152,14 @@ export default function Project() {
         visible={showProjectForm}
         onCreate={values =>
           dispatch(
-            actions.fetchUpdateProject({ values, fetchKey: currentProjectId })
+            actions.fetchUpdateProject({
+              values,
+              fetchKey: currentProjectId,
+              callback: closeProjectForm,
+            })
           )
         }
-        onCancel={() => {
-          dispatch(actions.setValue('currentProjectId', null));
-          dispatch(actions.setValue('showProjectForm', false));
-        }}
+        onCancel={closeProjectForm}
       />
     </>
   );

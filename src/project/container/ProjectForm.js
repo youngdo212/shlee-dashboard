@@ -33,18 +33,13 @@ export default function ProjectForm({
   useEffect(() => {
     const values = createValues(project);
     form.setFieldsValue(values);
-  }, [form, project]);
+  }, [project, form]);
 
-  const { isFetching, isFetched } = useFetchInfo(
-    actions.fetchUpdateProject.toString(),
-    project.id
-  );
   useEffect(() => {
-    if (isFetched) {
+    if (!visible) {
       form.resetFields();
-      onCancel();
     }
-  }, [isFetched, form, onCancel]);
+  }, [visible, form]);
 
   function submit() {
     form
@@ -71,11 +66,15 @@ export default function ProjectForm({
       okText: I18N.PROJECT_FORM_CANCEL_CONFIRM_OK,
       cancelText: I18N.PROJECT_FORM_CANCEL_CONFIRM_CANCEL,
       onOk() {
-        form.resetFields();
         onCancel();
       },
     });
   }
+
+  const { isFetching } = useFetchInfo(
+    actions.fetchUpdateProject.toString(),
+    project.id
+  );
 
   return (
     <Modal
