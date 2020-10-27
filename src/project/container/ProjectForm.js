@@ -11,28 +11,35 @@ import SingleUpload from '../component/SingleUpload';
 import '../component/HeaderUpload.css';
 import useFetchInfo from '../../common/hook/useFetchInfo';
 import { actions } from '../state';
-import { useSelector } from 'react-redux';
 
 /**
  *
  * @param {object} param
+ * @param {boolean} param.isNew
+ * @param {object} param.project
  * @param {boolean} param.visible
  * @param {(values: object) => void} param.onCreate
- * @param {() => {}} param.onCancel
+ * @param {() => void} param.onCancel
  */
-export default function ProjectForm({ visible, onCreate, onCancel }) {
+export default function ProjectForm({
+  isNew,
+  project,
+  visible,
+  onCreate,
+  onCancel,
+}) {
   const [form] = Form.useForm();
-  const currentProjectId = useSelector(state => state.project.currentProjectId);
-  const { isFetching, isFetched } = useFetchInfo(
-    actions.fetchUpdateProject.toString(),
-    currentProjectId
-  );
+
   useEffect(() => {
-    if (isFetched) {
+    const values = createValues(project);
+    form.setFieldsValue(values);
+  }, [project, form]);
+
+  useEffect(() => {
+    if (!visible) {
       form.resetFields();
-      onCancel();
     }
-  }, [isFetched, form, onCancel]);
+  }, [visible, form]);
 
   function submit() {
     form
@@ -43,7 +50,7 @@ export default function ProjectForm({ visible, onCreate, onCancel }) {
             title: I18N.PROJECT_FORM_VALIDATE_MESSAGE_UPLOADING,
           });
         } else {
-          onCreate(normalizeValues({ id: currentProjectId, ...values }));
+          onCreate(normalizeValues({ ...values }));
         }
       })
       .catch(error => {
@@ -59,17 +66,25 @@ export default function ProjectForm({ visible, onCreate, onCancel }) {
       okText: I18N.PROJECT_FORM_CANCEL_CONFIRM_OK,
       cancelText: I18N.PROJECT_FORM_CANCEL_CONFIRM_CANCEL,
       onOk() {
-        form.resetFields();
         onCancel();
       },
     });
   }
 
+  const { isFetching } = useFetchInfo(
+    actions.fetchUpdateProject.toString(),
+    project.id
+  );
+
   return (
     <Modal
-      title={I18N.PROJECT_FORM_TITLE}
+      title={
+        isNew ? I18N.PROJECT_FORM_TITLE_CREATE : I18N.PROJECT_FORM_TITLE_EDIT
+      }
       visible={visible}
-      okText={I18N.PROJECT_FORM_SUBMIT}
+      okText={
+        isNew ? I18N.PROJECT_FORM_SUBMIT_CREATE : I18N.PROJECT_FORM_SUBMIT_EDIT
+      }
       onOk={submit}
       cancelText={I18N.PROJECT_FORM_CANCEL}
       onCancel={close}
@@ -79,15 +94,18 @@ export default function ProjectForm({ visible, onCreate, onCancel }) {
       <Form
         form={form}
         name="projectForm"
-        initialValues={initialValues}
+        initialValues={INITIAL_VALUES}
         validateMessages={validateMessages}
         {...formLayout}
       >
+        <Form.Item hidden={true} name="id">
+          <Input />
+        </Form.Item>
         <Form.Item
           label={I18N.PROJECT_THUMBNAIL}
           name="thumbnail"
           valuePropName="fileList"
-          getValueFromEvent={normalizeFile}
+          getValueFromEvent={normalizeFile({ maxLength: 1 })}
           rules={[{ required: true }]}
         >
           <SingleUpload />
@@ -124,7 +142,7 @@ export default function ProjectForm({ visible, onCreate, onCancel }) {
           label={I18N.PROJECT_HEADER_IMAGE}
           name="headerImage"
           valuePropName="fileList"
-          getValueFromEvent={normalizeFile}
+          getValueFromEvent={normalizeFile({ maxLength: 1 })}
           rules={[{ required: true }]}
         >
           <SingleUpload className="header-uploader" />
@@ -177,7 +195,7 @@ export default function ProjectForm({ visible, onCreate, onCancel }) {
           label={I18N.PROJECT_SNAPSHOTS}
           name="snapshots"
           valuePropName="fileList"
-          getValueFromEvent={normalizeFile}
+          getValueFromEvent={normalizeFile()}
         >
           <Upload
             accept="image/*"
@@ -197,7 +215,8 @@ export default function ProjectForm({ visible, onCreate, onCancel }) {
   );
 }
 
-const initialValues = {
+const INITIAL_VALUES = {
+  id: null,
   category: 'work',
   snapshotColumn: 1,
 };
@@ -235,10 +254,17 @@ const VideoUrlDeleteButton = styled(MinusCircleOutlined)`
   }
 `;
 
-function normalizeFile(e) {
-  if (Array.isArray(e)) return e;
+/**
+ *
+ * @param {object} param
+ * @param {number=} param.maxLength
+ */
+function normalizeFile({ maxLength = 0 } = {}) {
+  return function (e) {
+    if (Array.isArray(e)) return e.slice(-1 * maxLength);
 
-  return e && e.fileList;
+    return e && e.fileList.slice(-1 * maxLength);
+  };
 }
 
 /**
@@ -260,9 +286,9 @@ function normalizeValues({
   videoUrls,
   snapshots,
 }) {
-  const thumbnailImageUrl = thumbnail[0]?.response || '';
-  const headerImageUrl = headerImage[0]?.response || '';
-  const snapshotUrls = snapshots?.map(item => item.response) || [];
+  const thumbnailImageUrl = getUrlListFromFileList(thumbnail)[0] || '';
+  const headerImageUrl = getUrlListFromFileList(headerImage)[0] || '';
+  const snapshotUrls = getUrlListFromFileList(snapshots);
 
   return {
     id,
@@ -287,4 +313,89 @@ function isUploading(values) {
   return [...thumbnail, ...headerImage, ...(snapshots || [])].some(
     file => file.status === 'uploading'
   );
+}
+
+/**
+ *
+ * @param {object} project
+ * @param {any} project.id
+ * @param {any=} project.thumbnailImageUrl
+ * @param {any=} project.title
+ * @param {any=} project.header
+ * @param {any=} project.quickViewUrl
+ * @param {any=} project.client
+ * @param {any=} project.agency
+ * @param {any=} project.role
+ * @param {any=} project.category
+ * @param {any=} project.headerImageUrl
+ * @param {any=} project.snapshotColumn
+ * @param {any=} project.snapshotUrls
+ * @param {any=} project.videoUrls
+ */
+function createValues(project) {
+  // 1. 프로젝트를 생성한 경우 {id: 1}
+  // 2. 프로젝트를 수정하는 경우 {id: xxx, title, thumbnailImageUrl, header, ...}
+  if (project.id) {
+    return {
+      id: project.id,
+      thumbnail: createFileListByUrl(project.thumbnailImageUrl),
+      title: project.title || '',
+      header: project.header || '',
+      quickViewUrl: project.quickViewUrl || '',
+      client: project.client || '',
+      agency: project.agency || '',
+      role: project.role || '',
+      category: project.category || 'work',
+      headerImage: createFileListByUrl(project.headerImageUrl),
+      snapshotColumn: project.snapshotColumn || 1,
+      snapshots: createFileListByUrl(project.snapshotUrls),
+      videoUrls: project.videoUrls || [],
+    };
+  } else {
+    return INITIAL_VALUES;
+  }
+}
+
+/**
+ *
+ * @param {string | string[]=} urls
+ * @returns {array}
+ */
+function createFileListByUrl(urls) {
+  if (!urls) return [];
+
+  const FileFormat = {
+    uid: -1,
+    status: 'done',
+    url: '',
+  };
+
+  if (Array.isArray(urls)) {
+    return urls.map((url, index) => ({
+      ...FileFormat,
+      uid: (index + 1) * -1,
+      url,
+    }));
+  } else {
+    return [{ ...FileFormat, url: urls }];
+  }
+}
+
+/**
+ *
+ * @param {array} fileList
+ * @returns {array}
+ */
+function getUrlListFromFileList(fileList) {
+  if (!fileList) return [];
+
+  return fileList.map(file => {
+    if (file.response) {
+      return file.response.url;
+    } else if (file.url) {
+      return file.url;
+    } else {
+      return null;
+    }
+  });
 }

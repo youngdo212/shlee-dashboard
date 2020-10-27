@@ -8,7 +8,11 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ContentHeader from '../../common/component/ContentHeader';
 import { actions } from '../state';
-import { getProjectListWithKey } from '../state/selector';
+import {
+  getCurrentProject,
+  getCurrentProjectId,
+  getProjectListWithKey,
+} from '../state/selector';
 import FetchLabel from '../component/FetchLabel';
 import DraggableTable from '../component/DraggableTable';
 import '../component/HeaderUpload.css';
@@ -20,7 +24,8 @@ export default function Project() {
   const dispatch = useDispatch();
   const projectList = useSelector(getProjectListWithKey);
   const showProjectForm = useSelector(state => state.project.showProjectForm);
-  const currentProjectId = useSelector(state => state.project.currentProjectId);
+  const currentProjectId = useSelector(getCurrentProjectId);
+  const currentProject = useSelector(getCurrentProject);
 
   useEffect(() => {
     dispatch(actions.fetchProjectList());
@@ -62,7 +67,13 @@ export default function Project() {
       key: 'action',
       render: (_, record) => (
         <Space>
-          <Button size="small" onClick={() => {}}>
+          <Button
+            size="small"
+            onClick={() => {
+              dispatch(actions.setValue('currentProjectId', record.id));
+              dispatch(actions.setValue('showProjectForm', true));
+            }}
+          >
             {I18N.PROJECT_LIST_ITEM_EDIT}
           </Button>
           <Button
@@ -88,6 +99,11 @@ export default function Project() {
       ),
     },
   ];
+
+  function closeProjectForm() {
+    dispatch(actions.setValue('currentProjectId', null));
+    dispatch(actions.setValue('showProjectForm', false));
+  }
 
   return (
     <>
@@ -131,13 +147,19 @@ export default function Project() {
         />
       </Card>
       <ProjectForm
+        isNew={!currentProject}
+        project={currentProject || { id: currentProjectId }}
         visible={showProjectForm}
         onCreate={values =>
           dispatch(
-            actions.fetchUpdateProject({ values, fetchKey: currentProjectId })
+            actions.fetchUpdateProject({
+              values,
+              fetchKey: currentProjectId,
+              callback: closeProjectForm,
+            })
           )
         }
-        onCancel={() => dispatch(actions.setValue('showProjectForm', false))}
+        onCancel={closeProjectForm}
       />
     </>
   );
