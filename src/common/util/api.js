@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { API_HOST } from '../constant';
 
+// TODO: server api의 반환값을 {resultCode, resultMessage, data}로 통일하기
 /**
  *
  * @param {object} param
@@ -18,11 +19,24 @@ export function callApi({ method = 'get', url, params, data }) {
     data,
     withCredentials: true,
   })
-    .then(response => {
-      return {
-        isSuccess: true,
-        data: response.data,
-      };
+    .then(res => {
+      let response = res;
+
+      if (response.data.resultCode !== undefined) {
+        response = res.data;
+      }
+
+      if (response.resultCode !== ResultCode.Fail) {
+        return {
+          isSuccess: true,
+          data: response.data,
+        };
+      } else {
+        return {
+          isSuccess: false,
+          errorMessage: response.resultMessage,
+        };
+      }
     })
     .catch(error => {
       return {
@@ -31,3 +45,7 @@ export function callApi({ method = 'get', url, params, data }) {
       };
     });
 }
+
+const ResultCode = {
+  Fail: -1,
+};

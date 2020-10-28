@@ -1,5 +1,7 @@
 export const API_HOST = process.env.REACT_APP_API_HOST;
 export const Path = {
+  Login: '/auth/login',
+  Home: '/',
   Dashboard: '/',
   Project: '/project',
 };
@@ -7,6 +9,10 @@ export const FetchStatus = {
   Request: 'Request',
   Success: 'Success',
   Fail: 'Fail',
+};
+export const AuthStatus = {
+  Login: 'Login',
+  NotLogin: 'NotLogin',
 };
 export const FETCH_KEY = Symbol('FETCH_KEY');
 export const FETCH_PAGE = Symbol('FETCH_PAGE');
@@ -57,5 +63,10 @@ export const I18N = {
   PROJECT_VIDEO_URL: 'Video Url',
   PROJECT_SNAPSHOT_COLUMN: 'Snapshot Column',
   PROJECT_SNAPSHOTS: 'Snapshots',
+  AUTH_FORM_EMAIL_PLACEHOLDER: '이메일',
+  AUTH_FORM_PASSWORD_PLACEHOLDER: '비밀번호',
+  AUTH_FORM_SUBMIT_BUTTON: '로그인',
+  AUTH_FORM_VALIDATE_MESSAGE_REQUIRED_EMAIL: '이메일을 입력해주세요',
+  AUTH_FORM_VALIDATE_MESSAGE_REQUIRED_PASSWORD: '비밀번호를 입력해주세요',
 };
 /* eslint-enable no-template-curly-in-string */
