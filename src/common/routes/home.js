@@ -1,6 +1,6 @@
-import Dashboard from '../dashboard/container/Dashboard';
-import Project from '../project/container/Project';
-import { Path } from './constant';
+import Dashboard from '../../dashboard/container/Dashboard';
+import Project from '../../project/container/Project';
+import { Path } from '../constant';
 
 const routes = [
   {
