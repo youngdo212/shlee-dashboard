@@ -13,6 +13,7 @@ import useFetchInfo from '../../common/hook/useFetchInfo';
 import { actions } from '../state';
 
 /**
+ * 신규 프로젝트 생성 및 기존 프로젝트 수정 시 사용되는 폼 컴포넌트
  *
  * @param {object} param
  * @param {boolean} param.isNew

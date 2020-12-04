@@ -4,6 +4,9 @@ import styled from 'styled-components';
 import { PageHeader } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 
+/**
+ * Breadcrumb를 포함한 컴포넌트의 헤더 정보를 갖고있는 컴포넌트.
+ */
 export default function ContentHeader() {
   const location = useLocation();
   const routes = getBreadcrumbRoutes(location.pathname);

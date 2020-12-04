@@ -4,6 +4,7 @@ import React from 'react';
 import { I18N } from '../constant';
 
 /**
+ * dropdown기능을 가진 유저 정보를 나타내는 컴포넌트
  *
  * @param {object} param
  * @param {string} param.name user name

@@ -2,6 +2,7 @@ import React from 'react';
 import { Menu } from 'antd';
 
 /**
+ * 네비게이션 바
  *
  * @param {object} param
  * @param {object[]} param.items

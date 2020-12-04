@@ -20,6 +20,9 @@ import ProjectForm from './ProjectForm';
 import { I18N } from '../../common/constant';
 import useFetchInfo from '../../common/hook/useFetchInfo';
 
+/**
+ * 프로젝트 페이지를 나타내는 컴포넌트
+ */
 export default function Project() {
   const dispatch = useDispatch();
   const projectList = useSelector(getProjectListWithKey);

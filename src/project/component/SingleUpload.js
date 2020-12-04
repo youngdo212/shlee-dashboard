@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { API_HOST, I18N } from '../../common/constant';
 
 /**
+ * 한개의 이미지만 업로드 가능한 업로드 컴포넌트
  *
  * @param {object} param
  * @param {function=} param.onChange
