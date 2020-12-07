@@ -21,7 +21,7 @@ it('충돌 없이 렌더링을 수행한다', () => {
   renderWithRouter(<App />);
 });
 
-it('앱이 렌더링 되면 로딩 아이콘을 제거한다', () => {
+it('앱이 렌더링 되면 로딩 아이콘을 제거한다', async () => {
   const loadingEl = document.createElement('div');
   loadingEl.id = 'init-loading';
 
@@ -29,7 +29,9 @@ it('앱이 렌더링 되면 로딩 아이콘을 제거한다', () => {
 
   renderWithRouter(<App />);
 
-  expect(document.getElementById('init-loading')).toBeFalsy();
+  await wait(() => {
+    expect(document.getElementById('init-loading')).toBeFalsy();
+  });
 });
 
 it('유저 정보를 받아온다', async () => {
@@ -48,17 +50,13 @@ it('유저 정보를 받아온다', async () => {
 
   renderWithRouter(<App />);
 
-  await wait(() => screen.getByText('mock user'));
-
-  expect(screen.getByText('mock user')).toBeInTheDocument();
+  expect(await screen.findByText('mock user')).toBeInTheDocument();
 });
 
 it('로그인 페이지를 렌더링한다', async () => {
   renderWithRouter(<App />, { route: '/auth/login' });
 
-  await wait(() => screen.getByText('로그인'));
-
-  expect(screen.getByText('로그인')).toBeInTheDocument();
+  expect(await screen.findByText('로그인')).toBeInTheDocument();
 });
 
 it('홈 페이지를 렌더링한다', async () => {
@@ -77,9 +75,7 @@ it('홈 페이지를 렌더링한다', async () => {
 
   renderWithRouter(<App />, { route: '/' });
 
-  await wait(() => screen.getByText('Shlee Dashboard ©2020 Created by mando'));
-
   expect(
-    screen.getByText('Shlee Dashboard ©2020 Created by mando')
+    await screen.findByText('Shlee Dashboard ©2020 Created by mando')
   ).toBeInTheDocument();
 });
