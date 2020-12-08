@@ -91,6 +91,7 @@ export default function ProjectForm({
       onCancel={close}
       width={1000}
       confirmLoading={isFetching}
+      forceRender
     >
       <Form
         form={form}

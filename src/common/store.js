@@ -29,3 +29,5 @@ function* rootSaga() {
 sagaMiddleware.run(rootSaga);
 
 export default store;
+
+export { reducer, rootSaga };
