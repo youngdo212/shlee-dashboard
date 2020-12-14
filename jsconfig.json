@@ -1,9 +1,14 @@
 {
   "compilerOptions": {
     "jsx": "react",
-    "module": "commonjs",
+    "module": "es6",
+    "moduleResolution": "node",
     "target": "es2020",
-    "checkJs": true
+    "checkJs": true,
+    "baseUrl": "src",
+    "paths": {
+      "test-utils": ["./test-utils"]
+    }
   },
   "exclude": ["node_modules"]
 }

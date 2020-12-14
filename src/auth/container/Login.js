@@ -6,6 +6,9 @@ import { I18N } from '../../common/constant';
 import useBlockLoginUser from '../hook/useBlockLoginUser';
 import { actions } from '../state';
 
+/**
+ * 로그인 페이지의 메인 컴포넌트
+ */
 export default function Login() {
   useBlockLoginUser();
 

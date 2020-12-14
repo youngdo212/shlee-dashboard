@@ -5,6 +5,7 @@ import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import './DraggableTable.css';
 
 /**
+ * 드래그로 순서 변경이 가능한 테이블 컴포넌트
  *
  * @param {object} param
  */

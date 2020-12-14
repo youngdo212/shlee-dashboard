@@ -11,6 +11,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { actions as authActions } from '../../auth/state';
 import useNeedLogin from '../hook/useNeedLogin';
 
+/**
+ * 메인 페이지를 나타내는 컴포넌트
+ */
 function Home() {
   useNeedLogin();
 

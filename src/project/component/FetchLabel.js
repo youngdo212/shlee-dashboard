@@ -3,6 +3,7 @@ import React from 'react';
 import useFetchInfo from '../../common/hook/useFetchInfo';
 
 /**
+ * fetch 응답이 늦어질 경우 로딩 아이콘을 띄우는 레이블 컴포넌트
  *
  * @param {object} param
  * @param {string=} param.label
