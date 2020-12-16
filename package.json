@@ -2,7 +2,7 @@
   "name": "shlee-dashboard",
   "version": "0.1.0",
   "private": true,
-  "homepage": ".",
+  "homepage": "/dashboard",
   "dependencies": {
     "@ant-design/icons": "^4.2.2",
     "@reduxjs/toolkit": "^1.4.0",
