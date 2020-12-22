@@ -72,10 +72,7 @@ export default function Project() {
         <Space>
           <Button
             size="small"
-            onClick={() => {
-              dispatch(actions.setValue('currentProjectId', record.id));
-              dispatch(actions.setValue('showProjectForm', true));
-            }}
+            onClick={() => dispatch(actions.openProjectForm(record.id))}
           >
             {I18N.PROJECT_LIST_ITEM_EDIT}
           </Button>
@@ -103,11 +100,6 @@ export default function Project() {
     },
   ];
 
-  function closeProjectForm() {
-    dispatch(actions.setValue('currentProjectId', null));
-    dispatch(actions.setValue('showProjectForm', false));
-  }
-
   return (
     <>
       <ContentHeader />
@@ -130,13 +122,7 @@ export default function Project() {
             type="primary"
             icon={isFetching ? <LoadingOutlined /> : <PlusOutlined />}
             disabled={isFetching}
-            onClick={() =>
-              dispatch(
-                actions.fetchCreateProject(() => {
-                  dispatch(actions.setValue('showProjectForm', true));
-                })
-              )
-            }
+            onClick={() => dispatch(actions.fetchCreateProject())}
           >
             {I18N.ADD_PROJECT}
           </Button>
@@ -158,11 +144,10 @@ export default function Project() {
             actions.fetchUpdateProject({
               values,
               fetchKey: currentProjectId,
-              callback: closeProjectForm,
             })
           )
         }
-        onCancel={closeProjectForm}
+        onCancel={() => dispatch(actions.closeProjectForm())}
       />
     </>
   );
