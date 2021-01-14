@@ -15,7 +15,6 @@ import {
 } from '../state/selector';
 import FetchLabel from '../component/FetchLabel';
 import DraggableTable from '../component/DraggableTable';
-import '../component/HeaderUpload.css';
 import ProjectForm from './ProjectForm';
 import { I18N } from '../../common/constant';
 import useFetchInfo from '../../common/hook/useFetchInfo';

@@ -8,7 +8,6 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { API_HOST, I18N } from '../../common/constant';
 import SingleUpload from '../component/SingleUpload';
-import '../component/HeaderUpload.css';
 import useFetchInfo from '../../common/hook/useFetchInfo';
 import { actions } from '../state';
 
