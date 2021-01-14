@@ -2,7 +2,20 @@ import { Table } from 'antd';
 import React, { useRef } from 'react';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import './DraggableTable.css';
+import styled from 'styled-components';
+
+const Row = styled.tr`
+  & td {
+    border-bottom: ${({ isDragOver, dragDirection }) =>
+      isDragOver && dragDirection === 'downward'
+        ? '2px solid #1890ff !important'
+        : ''};
+    border-top: ${({ isDragOver, dragDirection }) =>
+      isDragOver && dragDirection === 'upward'
+        ? '2px solid #1890ff !important'
+        : ''};
+  }
+`;
 
 /**
  * 드래그로 순서 변경이 가능한 테이블 컴포넌트
@@ -33,7 +46,7 @@ function DraggableTableRow({ index, onMove, className, style, ...restProps }) {
   const [, dragRef] = useDrag({
     item: { type: REACT_DND_ITEM_TYPE, index },
   });
-  const [{ isOver, dropClassName }, dropRef] = useDrop({
+  const [{ isDragOver, dragDirection }, dropRef] = useDrop({
     accept: REACT_DND_ITEM_TYPE,
     drop: item => {
       if (item.index === index) return;
@@ -46,9 +59,8 @@ function DraggableTableRow({ index, onMove, className, style, ...restProps }) {
       if (dragIndex === index) return {};
 
       return {
-        isOver: monitor.isOver(),
-        dropClassName:
-          dragIndex < index ? ' drop-over-downward' : ' drop-over-upward',
+        isDragOver: monitor.isOver(),
+        dragDirection: dragIndex < index ? 'downward' : 'upward',
       };
     },
   });
@@ -56,9 +68,11 @@ function DraggableTableRow({ index, onMove, className, style, ...restProps }) {
   dropRef(dragRef(ref));
 
   return (
-    <tr
+    <Row
+      isDragOver={isDragOver}
+      dragDirection={dragDirection}
       ref={ref}
-      className={`${className}${isOver ? dropClassName : ''}`}
+      className={className}
       style={{ cursor: 'move', ...style }}
       {...restProps}
     />

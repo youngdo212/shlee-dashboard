@@ -12,6 +12,10 @@ export const actions = {
   editProject: createAction('project/editProject', project => ({
     payload: { project },
   })),
+  openProjectForm: createAction('project/openProjectForm', projectId => ({
+    payload: projectId,
+  })),
+  closeProjectForm: createAction('project/closeProjectForm'),
   fetchProjectList: createAction('project/fetchProjectList'),
   fetchRemoveProject: createAction('project/fetchRemoveProject', project => ({
     payload: project,
@@ -22,18 +26,13 @@ export const actions = {
       to,
     },
   })),
-  fetchCreateProject: createAction('project/fetchCreateProject', callback => ({
-    payload: {
-      callback,
-    },
-  })),
+  fetchCreateProject: createAction('project/fetchCreateProject'),
   fetchUpdateProject: createAction(
     'project/fetchUpdateProject',
-    ({ values, fetchKey, callback }) => ({
+    ({ values, fetchKey }) => ({
       payload: values,
       meta: {
         [FETCH_KEY]: fetchKey,
-        callback,
       },
     })
   ),
@@ -63,6 +62,14 @@ const reducer = createReducer(INITIAL_STATE, builder => {
       if (targetIndex !== -1) {
         state.projectList[targetIndex] = project;
       }
+    })
+    .addCase(actions.openProjectForm, (state, action) => {
+      state.currentProjectId = action.payload;
+      state.showProjectForm = true;
+    })
+    .addCase(actions.closeProjectForm, state => {
+      state.currentProjectId = null;
+      state.showProjectForm = false;
     });
 });
 

@@ -59,21 +59,20 @@ function* fetchMoveProject({ payload }) {
   }
 }
 
-function* fetchCreateProject({ payload }) {
+function* fetchCreateProject() {
   const { isSuccess, data, errorMessage } = yield call(callApi, {
     method: 'post',
     url: '/project',
   });
 
   if (isSuccess && data) {
-    yield put(actions.setValue('currentProjectId', data.id));
-    payload.callback && payload.callback();
+    yield put(actions.openProjectForm(data.id));
   } else {
     message.error(errorMessage);
   }
 }
 
-function* fetchUpdateProject({ payload, meta }) {
+function* fetchUpdateProject({ payload }) {
   const { isSuccess, data, errorMessage } = yield call(callApi, {
     method: 'put',
     url: `/project/${payload.id}`,
@@ -88,7 +87,7 @@ function* fetchUpdateProject({ payload, meta }) {
       yield put(actions.addProject(data));
     }
 
-    meta.callback && meta.callback();
+    yield put(actions.closeProjectForm());
   } else {
     message.error(errorMessage);
   }
